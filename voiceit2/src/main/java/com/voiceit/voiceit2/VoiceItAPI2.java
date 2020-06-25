@@ -15,7 +15,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.loopj.android.http.*;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -939,11 +942,11 @@ public class VoiceItAPI2 {
         requestWritePermission(activity);
     }
 
-    public void encapsulatedFaceVerification(Activity activity, String userId, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
-        encapsulatedFaceVerification(activity, userId, doLivenessCheck, 0, 2, responseHandler);
+    public void encapsulatedFaceVerification(Activity activity, String userId, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
+        encapsulatedFaceVerification(activity, userId, doLivenessCheck, doLivenessAudioCheck, 0, 2, responseHandler);
     }
 
-    public void encapsulatedFaceVerification(Activity activity, String userId, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedFaceVerification(Activity activity, String userId, boolean doLivenessCheck, boolean doLivenessAudioCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
@@ -955,6 +958,7 @@ public class VoiceItAPI2 {
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userId", userId);
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
+        bundle.putBoolean("doLivenessAudioCheck", doLivenessAudioCheck);
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
         bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);

@@ -24,7 +24,6 @@ import android.util.Log;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
-
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
@@ -217,7 +216,7 @@ public class FaceIdentificationView extends AppCompatActivity implements SensorE
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded);
+            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, false, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded);
         }
     }
 

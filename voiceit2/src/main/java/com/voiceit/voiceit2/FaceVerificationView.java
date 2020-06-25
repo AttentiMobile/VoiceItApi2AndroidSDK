@@ -21,20 +21,20 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.google.android.gms.vision.MultiProcessor;
+import com.google.android.gms.vision.Tracker;
+import com.google.android.gms.vision.face.Face;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.google.android.gms.vision.MultiProcessor;
-import com.google.android.gms.vision.Tracker;
-import com.google.android.gms.vision.face.Face;
-
-import com.loopj.android.http.JsonHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class FaceVerificationView extends AppCompatActivity implements SensorEventListener {
 
@@ -53,6 +53,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
     private VoiceItAPI2 mVoiceIt2;
     private String mUserId = "";
     private boolean mDoLivenessCheck = false;
+    private boolean mDoLivenessAudioCheck = false;
     private int mLivenessChallengeFailsAllowed;
     private int mLivenessChallengesNeeded;
 
@@ -76,6 +77,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
             mVoiceIt2 = new VoiceItAPI2(bundle.getString("apiKey"), bundle.getString("apiToken"));
             mUserId = bundle.getString("userId");
             mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
+            mDoLivenessAudioCheck = bundle.getBoolean("doLivenessAudioCheck");
             mLivenessChallengeFailsAllowed = bundle.getInt("livenessChallengeFailsAllowed");
             mLivenessChallengesNeeded = bundle.getInt("livenessChallengesNeeded");
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
@@ -261,7 +263,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded);
+            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded);
         }
     }
 

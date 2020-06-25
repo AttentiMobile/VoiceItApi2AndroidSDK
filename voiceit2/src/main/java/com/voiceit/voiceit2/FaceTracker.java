@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.media.MediaPlayer;
 
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
@@ -25,8 +26,10 @@ class FaceTracker extends Tracker<Face> {
     private final String mTAG = "FaceTracker";
 
     private final int [] mLivenessChallengeOrder;
+    private MediaPlayer mediaPlayer = new MediaPlayer();
 
     private final boolean mDoLivenessCheck;
+    private final boolean mDoLivenessAudioCheck;
     private final int mLivenessChallengeFailsAllowed;
     private final int mLivenessChallengesNeeded;
     private static int challengeIndex = 0;
@@ -42,12 +45,13 @@ class FaceTracker extends Tracker<Face> {
     static boolean lookingAway = false;
     static final Handler livenessTimer = new Handler();
 
-    FaceTracker(RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int [] livenessChallengeOrder, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded) {
+    FaceTracker(RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int [] livenessChallengeOrder, boolean doLivenessCheck, boolean doLivenessAudioCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded) {
         mOverlay = overlay;
         mActivity = activity;
         mCallbacks = callbacks;
         mLivenessChallengeOrder = livenessChallengeOrder;
         mDoLivenessCheck = doLivenessCheck;
+        mDoLivenessAudioCheck = doLivenessAudioCheck;
         mLivenessChallengeFailsAllowed = livenessChallengeFailsAllowed;
         mLivenessChallengesNeeded = livenessChallengesNeeded;
     }
@@ -82,6 +86,24 @@ class FaceTracker extends Tracker<Face> {
             }
         });
     }
+    private void playLivenessPrompt(final String livenessPrompt) {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.stop();
+                }
+                int resId = mActivity.getApplicationContext().getResources().getIdentifier(
+                        livenessPrompt,
+                        "raw",
+                        mActivity.getApplicationContext().getPackageName()
+                );
+                mediaPlayer = MediaPlayer.create(mActivity.getApplicationContext(), resId);
+                mediaPlayer.start();
+            }
+        });
+    }
+
 
     private void completeLivenessChallenge() {
         FaceTracker.continueDetecting = false;
@@ -133,6 +155,9 @@ class FaceTracker extends Tracker<Face> {
                         mDisplayingChallengeOutcome = true;
                         failLiveness(true);
                     } else {
+                        if(mDoLivenessAudioCheck) {
+                            playLivenessPrompt("smile");
+                        }
                         updateDisplayText(mActivity.getString(R.string.SMILE), false);
                     }
 
@@ -154,6 +179,9 @@ class FaceTracker extends Tracker<Face> {
                         mDisplayingChallengeOutcome = true;
                         failLiveness(true);
                     } else {
+                        if(mDoLivenessAudioCheck) {
+                            playLivenessPrompt("face_left");
+                        }
                         updateDisplayText(mActivity.getString(R.string.TURN_LEFT), false);
                         setProgressCircleColor(R.color.pendingLivenessSuccess);
                         setProgressCircleAngle(135.0, 90.0);
@@ -183,6 +211,9 @@ class FaceTracker extends Tracker<Face> {
                         mDisplayingChallengeOutcome = true;
                         failLiveness(true);
                     } else {
+                        if(mDoLivenessAudioCheck) {
+                            playLivenessPrompt("face_right");
+                        }
                         updateDisplayText(mActivity.getString(R.string.TURN_RIGHT), false);
                         setProgressCircleColor(R.color.pendingLivenessSuccess);
                         setProgressCircleAngle(315.0, 90.0);

@@ -32,15 +32,11 @@ before_install:
 before_script:
   - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
-  - android-wait-for-emulator
+  - travis_wait 30 android-wait-for-emulator
   - adb shell input keyevent 82 &
 
 script:
     - ./gradlew -Pandroid.testInstrumentationRunnerArguments.key=$VIAPIKEY -Pandroid.testInstrumentationRunnerArguments.tok=$VIAPITOKEN connectedAndroidTest
-
-after_success:
-  - ./release.sh
-  - ./email.sh
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

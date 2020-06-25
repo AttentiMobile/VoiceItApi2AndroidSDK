@@ -33,7 +33,7 @@ public class VoiceItAPI2 {
 
     public boolean mDisplayPreviewFrame = false;
 
-    public VoiceItAPI2(String apiKey, String apiToken){
+    public VoiceItAPI2(String apiKey, String apiToken) {
         this.apiKey = apiKey;
         this.apiToken = apiToken;
         this.client = new AsyncHttpClient();
@@ -44,8 +44,20 @@ public class VoiceItAPI2 {
         this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
     }
 
+    public VoiceItAPI2(String apiKey, String apiToken, String url) {
+        this.apiKey = apiKey;
+        this.apiToken = apiToken;
+        this.client = new AsyncHttpClient();
+        this.client.removeAllHeaders();
+        this.client.setTimeout(30 * 1000);
+        this.client.setBasicAuth(apiKey, apiToken);
+        this.client.addHeader("platformId", "40");
+        this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
+        BASE_URL = url;
+    }
+
     public void setURL(String url) {
-        BASE_URL = url.replaceAll("\\s+","");
+      BASE_URL = url.replaceAll("\\s+","");
     }
 
     private String getAbsoluteUrl(String relativeUrl) {
